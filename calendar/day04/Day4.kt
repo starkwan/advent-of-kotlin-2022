@@ -2,13 +2,18 @@ package day04
 
 import Day
 import Lines
+import java.lang.Integer.max
+import java.lang.Integer.min
 
 class Day4 : Day() {
     override fun part1(input: Lines): Any {
-        TODO("Not yet solved")
+        return input.map { it.split("[,-]".toRegex()).map(String::toInt) }
+            .count { (a, b, x, y) -> (a <= x && y <= b) || (x <= a && b <= y) }
     }
 
     override fun part2(input: Lines): Any {
-        TODO("Not yet solved")
+        return input.map { it.split("[,-]".toRegex()).map(String::toInt) }
+            .filterNot { (a, b, x, y) -> a > y || x > b }
+            .count()
     }
 }
