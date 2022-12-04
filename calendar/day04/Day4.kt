@@ -2,8 +2,6 @@ package day04
 
 import Day
 import Lines
-import java.lang.Integer.max
-import java.lang.Integer.min
 
 class Day4 : Day() {
     override fun part1(input: Lines): Any {
