@@ -83,7 +83,7 @@ class Day7 : Day() {
         }
 
         fun addChild(file: File) {
-            children.add(file)
+            children.find { file.name == it.name } ?: children.add(file)
         }
 
         fun getTotalSize(): Int {
