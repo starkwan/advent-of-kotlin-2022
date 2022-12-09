@@ -54,7 +54,7 @@ class Day9 : Day() {
 
         private fun moveTailPart1(newHead: Knot): Knot {
             // Works for part 1 only (since no diagonal move)
-            return if (abs(newHead.x - tail.x) > 1 || abs(newHead.y - tail.y) > 1) {
+            return if (abs(newHead.x - tail.x) == 2 || abs(newHead.y - tail.y) == 2) {
                 head
             } else {
                 tail
@@ -63,18 +63,11 @@ class Day9 : Day() {
 
         private fun moveTailPart2(newHead: Knot): Knot {
             // Works for part 1 and part 2
-            if (newHead.x == head.x && abs(newHead.y - tail.y) == 2) {
-                // If the head is ever two steps directly up, down, left, or right from the tail,
-                // the tail must also move one step in that direction
-                return Knot(newHead.x, tail.y + (newHead.y - tail.y).sign)
-            } else if (
-                (abs(newHead.x - tail.x) > 1 || abs(newHead.y - tail.y) > 1) && // head and tail aren't touching
-                (newHead.x == tail.x || newHead.y == newHead.y) //  aren't in the same row or column
-            ) {
-                // the tail always moves one step diagonally
-                return Knot(tail.x + (newHead.x - tail.x).sign, tail.y + (newHead.y - tail.y).sign)
+            return if (abs(newHead.x - tail.x) == 2 || abs(newHead.y - tail.y) == 2) {
+                Knot(tail.x + (newHead.x - tail.x).sign, tail.y + (newHead.y - tail.y).sign)
+            } else {
+                tail
             }
-            return tail
         }
     }
 
