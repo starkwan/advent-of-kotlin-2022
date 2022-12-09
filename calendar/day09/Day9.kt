@@ -21,11 +21,11 @@ class Day9 : Day() {
 
     override fun part2(input: Lines): Any {
         val tailVisitedSet = mutableSetOf<Knot>()
-        val longRope = LongRope(List(10) { Knot(0, 0) })
+        var longRope = LongRope(List(10) { Knot(0, 0) })
         input.forEach {
             val (action, times) = it.split(" ")
             repeat(times.toInt()) {
-                longRope.move(action)
+                longRope = longRope.move(action)
                 tailVisitedSet.add(longRope.knots.last())
             }
         }
@@ -72,7 +72,7 @@ class Day9 : Day() {
     }
 
     class LongRope(var knots: List<Knot>) {
-        fun move(action: String) {
+        fun move(action: String): LongRope {
             val ropes = knots.windowed(2, 1).map { (a, b) -> Rope(a, b) }
             val newKnots = mutableListOf<Knot>()
             ropes.forEachIndexed { i, rope ->
@@ -85,7 +85,7 @@ class Day9 : Day() {
                     newKnots.add(rope.move(newKnots.last()).tail)
                 }
             }
-            knots = newKnots.toList()
+            return LongRope(newKnots.toList())
         }
     }
 
