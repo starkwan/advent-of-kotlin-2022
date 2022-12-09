@@ -2,13 +2,99 @@ package day09
 
 import Day
 import Lines
+import kotlin.math.abs
+import kotlin.math.sign
 
 class Day9 : Day() {
     override fun part1(input: Lines): Any {
-        TODO("Not yet solved")
+        val tailVisitedSet = mutableSetOf<Knot>()
+        var rope = Rope(Knot(0, 0), Knot(0, 0))
+        input.forEach {
+            val (action, times) = it.split(" ")
+            repeat(times.toInt()) {
+                rope = rope.move(action)
+                tailVisitedSet.add(rope.tail)
+            }
+        }
+        return tailVisitedSet.size
     }
 
     override fun part2(input: Lines): Any {
-        TODO("Not yet solved")
+        val tailVisitedSet = mutableSetOf<Knot>()
+        val longRope = LongRope(List(10) { Knot(0, 0) })
+        input.forEach {
+            val (action, times) = it.split(" ")
+            repeat(times.toInt()) {
+                longRope.move(action)
+                tailVisitedSet.add(longRope.knots.last())
+            }
+        }
+        return tailVisitedSet.size
     }
+
+    class Rope(val head: Knot, val tail: Knot) {
+        fun move(action: String): Rope {
+            val newHead = moveHead(action)
+            return Rope(newHead, moveTailPart1(newHead))
+        }
+
+        fun move(newHead: Knot): Rope {
+            return Rope(newHead, moveTailPart2(newHead))
+        }
+
+        private fun moveHead(action: String): Knot {
+            return when (action) {
+                "U" -> head.copy(y = head.y + 1)
+                "D" -> head.copy(y = head.y - 1)
+                "R" -> head.copy(x = head.x + 1)
+                "L" -> head.copy(x = head.x - 1)
+                else -> error("wrong action")
+            }
+        }
+
+        private fun moveTailPart1(newHead: Knot): Knot {
+            // Works for part 1 only (since no diagonal move)
+            return if (abs(newHead.x - tail.x) > 1 || abs(newHead.y - tail.y) > 1) {
+                head
+            } else {
+                tail
+            }
+        }
+
+        private fun moveTailPart2(newHead: Knot): Knot {
+            // Works for part 1 and part 2
+            if (newHead.x == head.x && abs(newHead.y - tail.y) == 2) {
+                // If the head is ever two steps directly up, down, left, or right from the tail,
+                // the tail must also move one step in that direction
+                return Knot(newHead.x, tail.y + (newHead.y - tail.y).sign)
+            } else if (
+                (abs(newHead.x - tail.x) > 1 || abs(newHead.y - tail.y) > 1) && // head and tail aren't touching
+                (newHead.x == tail.x || newHead.y == newHead.y) //  aren't in the same row or column
+            ) {
+                // the tail always moves one step diagonally
+                return Knot(tail.x + (newHead.x - tail.x).sign, tail.y + (newHead.y - tail.y).sign)
+            }
+            return tail
+        }
+    }
+
+    class LongRope(var knots: List<Knot>) {
+        fun move(action: String) {
+            val ropes = knots.windowed(2, 1).map { (a, b) -> Rope(a, b) }
+            val newKnots = mutableListOf<Knot>()
+            ropes.forEachIndexed { i, rope ->
+                if (i == 0) {
+                    with(rope.move(action)) {
+                        newKnots.add(this.head)
+                        newKnots.add(this.tail)
+                    }
+                } else {
+                    newKnots.add(rope.move(newKnots.last()).tail)
+                }
+            }
+            knots = newKnots.toList()
+        }
+    }
+
+    data class Knot(val x: Int, val y: Int)
 }
